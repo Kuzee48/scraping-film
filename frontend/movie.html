@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Movie details on NexFlix">
+  <meta name="theme-color" content="#0f0f0f">
+  <title>Movie Details - NexFlix</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">NexFlix</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="genre.html?genre=action">Movies</a>
+      <a href="genre.html?genre=drama">Series</a>
+      <a href="genre.html?genre=anime">Anime</a>
+      <a href="genre.html?genre=drama-korea">Drama Korea</a>
+    </div>
+    <div class="nav-search">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="search-input" placeholder="Search movies..." autocomplete="off">
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="nav-mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="genre.html?genre=action">Movies</a>
+    <a href="genre.html?genre=drama">Series</a>
+    <a href="genre.html?genre=anime">Anime</a>
+    <a href="genre.html?genre=drama-korea">Drama Korea</a>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="detail-layout" id="movie-detail">
+      <!-- Movie detail loaded dynamically -->
+      <div class="loading-container">
+        <div class="skeleton" style="width:240px;height:360px;"></div>
+      </div>
+    </div>
+
+    <!-- Related Movies -->
+    <section style="margin-top:48px;">
+      <div class="section-header">
+        <h2>You May Also Like</h2>
+      </div>
+      <div class="movie-grid" id="related-grid"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2024 NexFlix. All rights reserved.</p>
+    <p class="disclaimer">Disclaimer: This site does not store any files on its server. All contents are provided by non-affiliated third parties.</p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var slug = getUrlParam('slug');
+        if (!slug) {
+          showError('No movie specified.');
+          return;
+        }
+        loadMovieDetail(slug);
+        initSearch();
+      });
+
+      function loadMovieDetail(slug) {
+        fetch(API_BASE_URL + '/movies/' + encodeURIComponent(slug))
+          .then(function (res) {
+            if (!res.ok) throw new Error('Not found');
+            return res.json();
+          })
+          .then(function (result) {
+            if (result.success && result.data) {
+              renderDetail(result.data);
+              loadRelated();
+            } else {
+              showError('Movie not found.');
+            }
+          })
+          .catch(function () {
+            showError('Unable to load movie details. Please make sure the backend server is running.');
+          });
+      }
+
+      function renderDetail(movie) {
+        document.title = (movie.title || 'Movie') + ' - NexFlix';
+
+        var container = document.querySelector('#movie-detail');
+        if (!container) return;
+
+        var posterHtml = movie.poster
+          ? '<img src="' + escapeHtml(movie.poster) + '" alt="' + escapeHtml(movie.title) + '">'
+          : '<div style="width:100%;height:360px;background:var(--bg-hover);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">No Poster</div>';
+
+        var metaHtml = '';
+        if (movie.releaseYear) metaHtml += '<span class="meta-item">' + escapeHtml(movie.releaseYear) + '</span>';
+        if (movie.duration) metaHtml += '<span class="meta-item">' + escapeHtml(movie.duration) + '</span>';
+        if (movie.rating) metaHtml += '<span class="meta-item rating">\u2605 ' + escapeHtml(movie.rating) + '</span>';
+        if (movie.quality) metaHtml += '<span class="meta-item quality">' + escapeHtml(movie.quality) + '</span>';
+        if (movie.country) metaHtml += '<span class="meta-item">' + escapeHtml(movie.country) + '</span>';
+
+        var genreHtml = '';
+        if (movie.genre && movie.genre.length > 0) {
+          genreHtml = '<div class="genre-tags">';
+          movie.genre.forEach(function (g) {
+            genreHtml += '<a href="genre.html?genre=' + encodeURIComponent(g.toLowerCase()) + '" class="genre-tag">' + escapeHtml(g) + '</a>';
+          });
+          genreHtml += '</div>';
+        }
+
+        var castHtml = '';
+        if (movie.cast && movie.cast.length > 0) {
+          castHtml = '<div class="detail-cast"><h3>Cast</h3><div class="cast-list">';
+          movie.cast.forEach(function (c) {
+            castHtml += '<span class="cast-item">' + escapeHtml(c) + '</span>';
+          });
+          castHtml += '</div></div>';
+        }
+
+        var playButton = '';
+        if (movie.streamingUrls && movie.streamingUrls.length > 0) {
+          playButton = '<a href="player.html?slug=' + encodeURIComponent(movie.slug) + '" class="btn btn-primary" style="margin-top:16px;">&#9654; Play Now</a>';
+        } else {
+          playButton = '<button class="btn btn-secondary" style="margin-top:16px;opacity:0.5;cursor:not-allowed;" disabled>No Stream Available</button>';
+        }
+
+        container.innerHTML =
+          '<div class="detail-poster">' + posterHtml + '</div>' +
+          '<div class="detail-info">' +
+            '<h1>' + escapeHtml(movie.title) + '</h1>' +
+            '<div class="detail-meta">' + metaHtml + '</div>' +
+            genreHtml +
+            '<p class="detail-synopsis">' + escapeHtml(movie.synopsis || 'No synopsis available.') + '</p>' +
+            castHtml +
+            playButton +
+          '</div>';
+      }
+
+      function loadRelated() {
+        fetch(API_BASE_URL + '/movies?page=1')
+          .then(function (res) { return res.json(); })
+          .then(function (result) {
+            if (result.success && result.data) {
+              var grid = document.querySelector('#related-grid');
+              if (!grid) return;
+              var movies = result.data.slice(0, 6);
+              movies.forEach(function (movie) {
+                var card = createCard(movie);
+                grid.appendChild(card);
+              });
+              // Lazy load images
+              grid.querySelectorAll('img.lazy').forEach(function (img) {
+                if (img.dataset.src) {
+                  img.src = img.dataset.src;
+                }
+              });
+            }
+          })
+          .catch(function () {});
+      }
+
+      function createCard(movie) {
+        var card = document.createElement('a');
+        card.className = 'movie-card';
+        card.href = 'movie.html?slug=' + encodeURIComponent(movie.slug);
+
+        var qualityClass = (movie.quality && movie.quality.toLowerCase().indexOf('cam') !== -1) ? ' cam' : '';
+        var ratingHtml = movie.rating ? '<span class="rating-badge">' + escapeHtml(movie.rating) + '</span>' : '';
+        var qualityHtml = movie.quality ? '<span class="quality-badge' + qualityClass + '">' + escapeHtml(movie.quality) + '</span>' : '';
+        var imgHtml = movie.thumbnail
+          ? '<img src="' + escapeHtml(movie.thumbnail) + '" alt="' + escapeHtml(movie.title) + '">'
+          : '<div style="width:100%;height:100%;background:var(--bg-hover);"></div>';
+
+        card.innerHTML =
+          '<div class="card-image">' + imgHtml + ratingHtml + qualityHtml + '<div class="card-overlay"></div></div>' +
+          '<div class="card-info"><div class="card-title">' + escapeHtml(movie.title) + '</div><div class="card-year">' + escapeHtml(movie.year || '') + '</div></div>';
+        return card;
+      }
+
+      function showError(msg) {
+        var container = document.querySelector('#movie-detail');
+        if (container) {
+          container.innerHTML = '<div class="error-state" style="width:100%;"><p>' + escapeHtml(msg) + '</p><a href="index.html" class="btn btn-primary">Back to Home</a></div>';
+        }
+      }
+
+      function initSearch() {
+        var input = document.querySelector('#search-input');
+        if (!input) return;
+        input.addEventListener('keyup', function (e) {
+          if (e.key === 'Enter' && e.target.value.trim().length > 0) {
+            window.location.href = 'search.html?q=' + encodeURIComponent(e.target.value.trim());
+          }
+        });
+      }
+
+      function getUrlParam(name) {
+        return new URLSearchParams(window.location.search).get(name);
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+      }
+    })();
+  </script>
+</body>
+</html>

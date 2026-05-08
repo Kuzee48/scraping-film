@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Watch on NexFlix">
+  <meta name="theme-color" content="#0f0f0f">
+  <title>Player - NexFlix</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">NexFlix</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="genre.html?genre=action">Movies</a>
+      <a href="genre.html?genre=drama">Series</a>
+      <a href="genre.html?genre=anime">Anime</a>
+      <a href="genre.html?genre=drama-korea">Drama Korea</a>
+    </div>
+    <div class="nav-search">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="search-input" placeholder="Search movies..." autocomplete="off">
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="nav-mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="genre.html?genre=action">Movies</a>
+    <a href="genre.html?genre=drama">Series</a>
+    <a href="genre.html?genre=anime">Anime</a>
+    <a href="genre.html?genre=drama-korea">Drama Korea</a>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="player-container">
+      <a href="index.html" class="back-link">&#8592; Back to Details</a>
+
+      <!-- Player -->
+      <div class="player-wrapper">
+        <iframe id="player-iframe" src="about:blank" allowfullscreen allow="autoplay; fullscreen"></iframe>
+      </div>
+
+      <!-- Server Selection -->
+      <div class="server-list" id="server-list">
+        <!-- Server buttons loaded dynamically -->
+      </div>
+
+      <!-- Movie Info -->
+      <div class="player-info" id="player-info">
+        <h1>Loading...</h1>
+        <p class="player-meta"></p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2024 NexFlix. All rights reserved.</p>
+    <p class="disclaimer">Disclaimer: This site does not store any files on its server. All contents are provided by non-affiliated third parties.</p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/player.js"></script>
+</body>
+</html>
