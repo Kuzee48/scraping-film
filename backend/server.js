@@ -10,6 +10,9 @@ const genresRouter = require('./routes/genres');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust first proxy (nginx) so rate limiter uses correct client IP
+app.set('trust proxy', 1);
+
 // Cache: TTL of 30 minutes (1800 seconds)
 const cache = new NodeCache({ stdTTL: 1800, checkperiod: 600 });
 app.locals.cache = cache;

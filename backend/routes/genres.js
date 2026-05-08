@@ -17,7 +17,7 @@ router.get('/', async (req, res, next) => {
 
     const result = await scraper.getGenres();
 
-    if (result.success && req.app.locals.cache) {
+    if (result.success && result.data && result.data.length > 0 && req.app.locals.cache) {
       req.app.locals.cache.set(cacheKey, result);
     }
 
@@ -57,7 +57,7 @@ router.get('/:genre', async (req, res, next) => {
 
     const result = await scraper.getMovies(page, genre);
 
-    if (result.success && req.app.locals.cache) {
+    if (result.success && result.data && result.data.length > 0 && req.app.locals.cache) {
       req.app.locals.cache.set(cacheKey, result);
     }
 

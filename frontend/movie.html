@@ -60,6 +60,7 @@
   </footer>
 
   <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
   <script>
     (function () {
       'use strict';
@@ -168,52 +169,6 @@
             }
           })
           .catch(function () {});
-      }
-
-      function createCard(movie) {
-        var card = document.createElement('a');
-        card.className = 'movie-card';
-        card.href = 'movie.html?slug=' + encodeURIComponent(movie.slug);
-
-        var qualityClass = (movie.quality && movie.quality.toLowerCase().indexOf('cam') !== -1) ? ' cam' : '';
-        var ratingHtml = movie.rating ? '<span class="rating-badge">' + escapeHtml(movie.rating) + '</span>' : '';
-        var qualityHtml = movie.quality ? '<span class="quality-badge' + qualityClass + '">' + escapeHtml(movie.quality) + '</span>' : '';
-        var imgHtml = movie.thumbnail
-          ? '<img src="' + escapeHtml(movie.thumbnail) + '" alt="' + escapeHtml(movie.title) + '">'
-          : '<div style="width:100%;height:100%;background:var(--bg-hover);"></div>';
-
-        card.innerHTML =
-          '<div class="card-image">' + imgHtml + ratingHtml + qualityHtml + '<div class="card-overlay"></div></div>' +
-          '<div class="card-info"><div class="card-title">' + escapeHtml(movie.title) + '</div><div class="card-year">' + escapeHtml(movie.year || '') + '</div></div>';
-        return card;
-      }
-
-      function showError(msg) {
-        var container = document.querySelector('#movie-detail');
-        if (container) {
-          container.innerHTML = '<div class="error-state" style="width:100%;"><p>' + escapeHtml(msg) + '</p><a href="index.html" class="btn btn-primary">Back to Home</a></div>';
-        }
-      }
-
-      function initSearch() {
-        var input = document.querySelector('#search-input');
-        if (!input) return;
-        input.addEventListener('keyup', function (e) {
-          if (e.key === 'Enter' && e.target.value.trim().length > 0) {
-            window.location.href = 'search.html?q=' + encodeURIComponent(e.target.value.trim());
-          }
-        });
-      }
-
-      function getUrlParam(name) {
-        return new URLSearchParams(window.location.search).get(name);
-      }
-
-      function escapeHtml(str) {
-        if (!str) return '';
-        var div = document.createElement('div');
-        div.appendChild(document.createTextNode(str));
-        return div.innerHTML;
       }
     })();
   </script>

@@ -150,22 +150,4 @@
         '</div>';
     }
   }
-
-  /**
-   * Get URL query parameter
-   */
-  function getUrlParam(name) {
-    var params = new URLSearchParams(window.location.search);
-    return params.get(name);
-  }
-
-  /**
-   * Escape HTML to prevent XSS
-   */
-  function escapeHtml(str) {
-    if (!str) return '';
-    var div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-  }
 })();

@@ -22,7 +22,7 @@ router.get('/', async (req, res, next) => {
 
     const result = await scraper.getMovies(page, genre, year);
 
-    if (result.success && req.app.locals.cache) {
+    if (result.success && result.data && result.data.length > 0 && req.app.locals.cache) {
       req.app.locals.cache.set(cacheKey, result);
     }
 
@@ -62,7 +62,7 @@ router.get('/search', async (req, res, next) => {
 
     const result = await scraper.searchMovies(query, page);
 
-    if (result.success && req.app.locals.cache) {
+    if (result.success && result.data && result.data.length > 0 && req.app.locals.cache) {
       req.app.locals.cache.set(cacheKey, result);
     }
 
@@ -88,6 +88,13 @@ router.get('/:slug', async (req, res, next) => {
       return res.status(400).json({
         success: false,
         error: 'Movie slug is required',
+      });
+    }
+
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid movie slug format',
       });
     }
 

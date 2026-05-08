@@ -16,7 +16,7 @@
    */
   document.addEventListener('DOMContentLoaded', function () {
     initNavbar();
-    initSearch();
+    initAppSearch();
     loadGenres();
 
     // Determine current page context
@@ -54,9 +54,9 @@
   }
 
   /**
-   * Initialize search functionality with debounce
+   * Initialize search functionality with debounce (app-specific with auto-search)
    */
-  function initSearch() {
+  function initAppSearch() {
     var searchInput = document.querySelector('#search-input');
     if (!searchInput) return;
 
@@ -100,7 +100,6 @@
         return response.json();
       })
       .then(function (result) {
-        hideLoading();
         isLoading = false;
 
         if (result.success && result.data && result.data.length > 0) {
@@ -108,18 +107,17 @@
           if (result.pagination) {
             totalPages = result.pagination.totalPages || 1;
             currentPage = result.pagination.currentPage || page;
-            setupPagination(currentPage, totalPages);
+            setupPagination(currentPage, totalPages, 'appNavigate');
           }
           // Set hero from first movie if hero section exists
           if (page === 1 && !genre) {
             setHeroMovie(result.data[0]);
           }
         } else {
-          showEmptyState('No movies found.');
+          showEmpty('No movies found.');
         }
       })
-      .catch(function (error) {
-        hideLoading();
+      .catch(function () {
         isLoading = false;
         showError('Unable to load movies. Please make sure the backend server is running.');
       });
@@ -135,52 +133,9 @@
     grid.innerHTML = '';
 
     movies.forEach(function (movie) {
-      var card = renderMovieCard(movie);
+      var card = createCard(movie);
       grid.appendChild(card);
     });
-  }
-
-  /**
-   * Create a movie card DOM element
-   */
-  function renderMovieCard(movie) {
-    var card = document.createElement('a');
-    card.className = 'movie-card';
-    card.href = 'movie.html?slug=' + encodeURIComponent(movie.slug);
-
-    var qualityClass = '';
-    if (movie.quality && movie.quality.toLowerCase().indexOf('cam') !== -1) {
-      qualityClass = ' cam';
-    }
-
-    var ratingHtml = '';
-    if (movie.rating) {
-      ratingHtml = '<span class="rating-badge">' + escapeHtml(movie.rating) + '</span>';
-    }
-
-    var qualityHtml = '';
-    if (movie.quality) {
-      qualityHtml = '<span class="quality-badge' + qualityClass + '">' + escapeHtml(movie.quality) + '</span>';
-    }
-
-    var thumbnail = movie.thumbnail || '';
-    var imgHtml = thumbnail
-      ? '<img data-src="' + escapeHtml(thumbnail) + '" alt="' + escapeHtml(movie.title) + '" class="lazy">'
-      : '<div style="width:100%;height:100%;background:var(--bg-hover);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:0.8rem;padding:10px;text-align:center;">' + escapeHtml(movie.title) + '</div>';
-
-    card.innerHTML =
-      '<div class="card-image">' +
-        imgHtml +
-        ratingHtml +
-        qualityHtml +
-        '<div class="card-overlay"></div>' +
-      '</div>' +
-      '<div class="card-info">' +
-        '<div class="card-title">' + escapeHtml(movie.title) + '</div>' +
-        '<div class="card-year">' + escapeHtml(movie.year || '') + '</div>' +
-      '</div>';
-
-    return card;
   }
 
   /**
@@ -209,27 +164,6 @@
         '<a href="movie.html?slug=' + encodeURIComponent(movie.slug) + '" class="btn btn-primary">\u25B6 Watch Now</a>' +
         '<a href="movie.html?slug=' + encodeURIComponent(movie.slug) + '" class="btn btn-secondary">More Info</a>' +
       '</div>';
-  }
-
-  /**
-   * Setup pagination controls
-   */
-  function setupPagination(current, total) {
-    var container = document.querySelector('#pagination');
-    if (!container) return;
-
-    if (total <= 1) {
-      container.innerHTML = '';
-      return;
-    }
-
-    var html = '';
-
-    html += '<button ' + (current <= 1 ? 'disabled' : '') + ' onclick="window.appNavigate(' + (current - 1) + ')">&laquo; Previous</button>';
-    html += '<span class="page-info">Page ' + current + ' of ' + total + '</span>';
-    html += '<button ' + (current >= total ? 'disabled' : '') + ' onclick="window.appNavigate(' + (current + 1) + ')">Next &raquo;</button>';
-
-    container.innerHTML = html;
   }
 
   /**
@@ -271,57 +205,6 @@
       html += '<a href="genre.html?genre=' + encodeURIComponent(genre.slug) + '">' + escapeHtml(genre.name) + '</a>';
     });
     container.innerHTML = html;
-  }
-
-  /**
-   * Show loading skeleton cards
-   */
-  function showLoading() {
-    var grid = document.querySelector('#movie-grid');
-    if (!grid) return;
-
-    var html = '';
-    for (var i = 0; i < 12; i++) {
-      html += '<div class="movie-card skeleton"><div class="skeleton-card"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>';
-    }
-    grid.innerHTML = html;
-  }
-
-  /**
-   * Hide loading state
-   */
-  function hideLoading() {
-    // Loading is cleared when movies render
-  }
-
-  /**
-   * Show empty state message
-   */
-  function showEmptyState(message) {
-    var grid = document.querySelector('#movie-grid');
-    if (!grid) return;
-
-    grid.innerHTML =
-      '<div class="empty-state" style="grid-column:1/-1;">' +
-        '<div class="empty-icon">&#127916;</div>' +
-        '<h3>No Results</h3>' +
-        '<p>' + escapeHtml(message) + '</p>' +
-        '<a href="index.html" class="btn btn-primary">Back to Home</a>' +
-      '</div>';
-  }
-
-  /**
-   * Show error state
-   */
-  function showError(message) {
-    var grid = document.querySelector('#movie-grid');
-    if (!grid) return;
-
-    grid.innerHTML =
-      '<div class="error-state" style="grid-column:1/-1;">' +
-        '<p>' + escapeHtml(message) + '</p>' +
-        '<button class="btn btn-primary" onclick="location.reload()">Retry</button>' +
-      '</div>';
   }
 
   /**
@@ -377,23 +260,5 @@
         img.classList.remove('lazy');
       }
     });
-  }
-
-  /**
-   * Get URL query parameter
-   */
-  function getUrlParam(name) {
-    var params = new URLSearchParams(window.location.search);
-    return params.get(name);
-  }
-
-  /**
-   * Escape HTML to prevent XSS
-   */
-  function escapeHtml(str) {
-    if (!str) return '';
-    var div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
   }
 })();
