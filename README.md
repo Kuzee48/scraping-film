@@ -1,240 +1,225 @@
-🎬 Scraping Film — Website Streaming
+# 🎬 Scraping Film - Streaming Website
 
-by Kuzee48
-
-Website streaming full-stack yang melakukan scraping data film dan serial dari sumber berbasis LK21. Menghadirkan tampilan dark mode modern untuk menjelajahi, mencari, dan menonton film maupun series secara online.
-
+A full-stack streaming website that scrapes movie and series data from LK21-based sources. Features a dark-themed UI for browsing, searching, and streaming movies and TV series.
 
 ---
 
-✨ Fitur Utama
+## ✨ Features
 
-Web Scraping Otomatis — Mengambil data film & serial secara otomatis dari sumber berbasis LK21
-
-Pencarian Cepat — Search film dan serial dengan full-text search
-
-Streaming Player — Pemutar video terintegrasi untuk menonton langsung
-
-Dark Mode UI — Desain modern bertema gelap seperti platform streaming populer
-
-Caching System — Menggunakan node-cache untuk mengurangi request berulang
-
-Rate Limiting — Proteksi API agar tidak mudah disalahgunakan
-
-Kategori Genre — Jelajahi film berdasarkan genre
-
-Responsive Design — Nyaman digunakan di desktop maupun mobile
-
-
+- 🕷️ **Web Scraping** - Automatically scrapes movie/series data from LK21-based sources
+- 🔍 **Search** - Full-text search across movies and series
+- ▶️ **Streaming** - Embedded video player for watching content
+- 🌙 **Dark UI** - Modern dark-themed interface inspired by popular streaming platforms
+- ⚡ **Caching** - Server-side caching with node-cache to reduce redundant requests
+- 🛡️ **Rate Limiting** - Built-in rate limiting to prevent abuse
+- 🎭 **Genre Browsing** - Browse content by genre categories
+- 📱 **Responsive Design** - Works across desktop and mobile devices
 
 ---
 
-🛠 Tech Stack
+## 🛠️ Tech Stack
 
-Layer	Teknologi
-
-Backend	Node.js, Express.js
-Scraping	Cheerio, Axios
-Frontend	HTML, CSS, JavaScript
-Cache	node-cache
-Deploy	Docker, Nginx
-
-
+| Layer      | Technology                  |
+| ---------- | --------------------------- |
+| Backend    | Node.js, Express.js         |
+| Scraping   | Cheerio, Axios              |
+| Frontend   | Vanilla HTML, CSS, JavaScript |
+| Caching    | node-cache                  |
+| Deployment | Docker, Nginx               |
 
 ---
 
-📦 Persyaratan
+## 📋 Prerequisites
 
-Node.js versi 18+
-
-npm
-
-
+- Node.js 18+
+- npm or yarn
+- Docker & Docker Compose (optional, for containerized deployment)
 
 ---
 
-🚀 Instalasi & Setup
+## 🚀 Installation & Setup
 
-1. Clone Repository
+### Local Development
 
-git clone <repo-url>
-cd scraping-film
+1. **Clone the repository:**
+   ```bash
+   git clone <repo-url>
+   cd scraping-film
+   ```
 
+2. **Install backend dependencies:**
+   ```bash
+   cd backend
+   npm install
+   ```
 
----
+3. **Configure environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` to customize the base URL or port as needed.
 
-2. Install Dependency Backend
+4. **Start the backend server:**
+   ```bash
+   node server.js
+   ```
+   The API will be available at `http://localhost:3000`
 
-cd backend
-npm install
-
-
----
-
-3. Konfigurasi Environment
-
-cp .env.example .env
-
-Edit file .env jika ingin mengganti URL sumber atau port server.
-
-
----
-
-4. Jalankan Backend
-
-node server.js
-
-
----
-
-5. Jalankan Frontend
-
-Buka file:
-
-frontend/index.html
-
-langsung di browser, atau gunakan static server seperti:
-
-npx serve frontend
-
+5. **Open the frontend:**
+   - Open `frontend/index.html` directly in your browser, or
+   - Serve the `frontend/` directory using a local server:
+     ```bash
+     npx http-server frontend/
+     ```
 
 ---
 
-📚 Dokumentasi API
+## 📡 API Documentation
 
-Method	Endpoint	Deskripsi	Contoh
-
-GET	/api/movies	Menampilkan semua film	/api/movies
-GET	/api/movies/search	Mencari film berdasarkan query	/api/movies/search?q=avengers
-GET	/api/movies/:slug	Detail film berdasarkan slug	/api/movies/avengers-endgame
-GET	/api/series	Menampilkan semua serial	/api/series
-GET	/api/series/:slug	Detail serial berdasarkan slug	/api/series/breaking-bad
-GET	/api/genres	Daftar semua genre	/api/genres
-GET	/api/genres/:genre	Film/serial berdasarkan genre	/api/genres/action
-
-
+| Method | Endpoint              | Description                    | Example                          |
+| ------ | --------------------- | ------------------------------ | -------------------------------- |
+| GET    | `/api/movies`         | List all movies                | `/api/movies`                    |
+| GET    | `/api/movies/search`  | Search movies by query         | `/api/movies/search?q=avengers`  |
+| GET    | `/api/movies/:slug`   | Get movie details by slug      | `/api/movies/avengers-endgame`   |
+| GET    | `/api/series`         | List all series                | `/api/series`                    |
+| GET    | `/api/series/:slug`   | Get series details by slug     | `/api/series/breaking-bad`       |
+| GET    | `/api/genres`         | List all available genres      | `/api/genres`                    |
+| GET    | `/api/genres/:genre`  | Get movies/series by genre     | `/api/genres/action`             |
 
 ---
 
-📁 Struktur Project
+## 📁 Project Structure
 
+```
 scraping-film/
 ├── backend/
 │   ├── routes/
-│   │   ├── movies.js
-│   │   ├── series.js
-│   │   └── genres.js
-│   ├── scraper.js
-│   ├── server.js
-│   ├── package.json
-│   ├── Dockerfile
-│   └── .env.example
+│   │   ├── movies.js              # Movie API routes
+│   │   ├── series.js              # Series API routes
+│   │   └── genres.js              # Genre API routes
+│   ├── scraper.js                 # Web scraping logic
+│   ├── server.js                  # Express server entry point
+│   ├── package.json               # Backend dependencies
+│   ├── Dockerfile                 # Backend Docker image
+│   └── .env.example               # Environment variable template
 │
 ├── frontend/
 │   ├── css/
-│   │   └── style.css
+│   │   └── style.css              # Dark-themed styles
 │   ├── js/
-│   │   ├── app.js
-│   │   ├── player.js
-│   │   └── config.js
-│   ├── index.html
-│   ├── movie.html
-│   ├── player.html
-│   ├── search.html
-│   ├── genre.html
-│   ├── Dockerfile
-│   └── nginx.conf
+│   │   ├── app.js                 # Main frontend logic
+│   │   ├── player.js              # Video player logic
+│   │   └── config.js              # Frontend configuration
+│   ├── index.html                 # Homepage
+│   ├── movie.html                 # Movie detail page
+│   ├── player.html                # Video player page
+│   ├── search.html                # Search results page
+│   ├── genre.html                 # Genre listing page
+│   ├── Dockerfile                 # Frontend Docker image (Nginx)
+│   └── nginx.conf                 # Nginx configuration
 │
-├── docker-compose.yml
-├── .gitignore
-└── README.md
-
+├── docker-compose.yml             # Docker Compose configuration
+├── .gitignore                     # Git ignore rules
+└── README.md                      # Project documentation
+```
 
 ---
 
-🐳 Deployment Docker
+## 🐳 Docker Deployment
 
-Menjalankan seluruh aplikasi menggunakan Docker Compose:
+Deploy the entire application using Docker Compose:
 
+### Start the Application
+
+```bash
 docker-compose up -d
+```
 
-Service yang akan berjalan:
+This will start:
+- **Backend** on port `3000` - Node.js API server
+- **Frontend** on port `8080` - Nginx serving static files with API proxy
 
-Backend → Port 3000
+### Stop the Application
 
-Frontend → Port 8080
-
-
-
----
-
-Menghentikan Container
-
+```bash
 docker-compose down
+```
 
+### Rebuild After Changes
 
----
-
-Rebuild Setelah Perubahan
-
+```bash
 docker-compose up -d --build
-
-
----
-
-⚙️ Konfigurasi
-
-Backend (.env)
-
-Variable	Deskripsi	Default
-
-BASE_URL	URL website sumber scraping	https://tv10.lk21official.cc
-PORT	Port server backend	3000
-
-
+```
 
 ---
 
-Frontend (js/config.js)
+## ⚙️ Configuration
 
-Variable	Deskripsi	Default
+### Backend Environment Variables (.env)
 
-API_BASE_URL	URL API backend	http://localhost:3000/api
+| Variable   | Description          | Default                       |
+| ---------- | -------------------- | ----------------------------- |
+| `BASE_URL` | Source website URL   | `https://tv10.lk21official.cc` |
+| `PORT`     | Server port          | `3000`                        |
 
+### Frontend Configuration (js/config.js)
 
-Saat menggunakan Docker Compose, Nginx akan otomatis melakukan proxy ke backend, sehingga production bisa menggunakan:
+| Variable       | Description           | Default                    |
+| -------------- | --------------------- | -------------------------- |
+| `API_BASE_URL` | Backend API base URL  | `http://localhost:3000/api` |
 
-API_BASE_URL = "/api"
-
-
----
-
-⚠️ Disclaimer
-
-Project ini dibuat hanya untuk tujuan pembelajaran dan edukasi, seperti:
-
-Teknik web scraping
-
-Pembuatan REST API
-
-Pengembangan frontend & backend
-
-Deployment menggunakan Docker
-
-
-Harap tetap menghormati hak cipta dan ketentuan layanan dari website sumber.
-Developer tidak bertanggung jawab atas penyalahgunaan project ini.
-
+**Note:** When using Docker Compose, the frontend Nginx config automatically proxies `/api` requests to the backend service. In production, set `API_BASE_URL` to `/api`.
 
 ---
 
-📄 License
+## 🐛 Troubleshooting
 
-MIT License
+### Port Already in Use
+If port 3000 or 8080 is already in use, modify the ports in `docker-compose.yml` or `.env` file.
 
+### CORS Issues
+Ensure the frontend `API_BASE_URL` matches the backend URL. For local development, update `frontend/js/config.js`.
+
+### Scraper Not Working
+- Verify the `BASE_URL` in `.env` is accessible
+- Check that the target website structure hasn't changed
+- Review scraper logs in the backend console
+
+### Container Issues
+```bash
+# View logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Rebuild from scratch
+docker-compose down
+docker-compose up -d --build
+```
 
 ---
 
-<div align="center">Developed with ❤️ by Kuzee48
+## 📝 License
 
-</div>
+This project is licensed under the **MIT License** - see the LICENSE file for details.
+
+---
+
+## ⚖️ Disclaimer
+
+This project is for **educational purposes only**. It demonstrates web scraping techniques, REST API design, and frontend development. 
+
+**Important:** 
+- Respect copyright laws and website terms of service
+- Always check the target website's `robots.txt` and terms before scraping
+- Use rate limiting to avoid overwhelming server resources
+- The developer assumes no responsibility for misuse
+
+---
+
+## 📧 Support
+
+For issues, questions, or suggestions, please open a GitHub issue in this repository.
+
+---
+
+**Made with ❤️ by the Scraping Film Team**
